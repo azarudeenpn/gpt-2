@@ -1,14 +1,14 @@
 HOW TO RUN:
 
-docker build -t *<image name>* .
+docker build -t *image name* .
 
-docker run -p 5001:5001 --rm -it *<image name>*
+docker run -p 5001:5001 --rm -it *image name*
 
 
 REQUEST:
 
 Method = 'POST'
-Body = {"input":"*<input text comes here>*"}
+Body = {"input":"*input text comes here*"}
 
 
 

@@ -3,28 +3,34 @@
 import fire
 import warnings;
 import sys;
+
 warnings.filterwarnings("ignore")
 import json
 import os
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['KMP_WARNINGS'] = '0'
 import numpy as np
 import tensorflow as tf
 import model, sample, encoder
+
 tf.get_logger().setLevel('INFO')
 from tensorflow.python.util import deprecation
+
 deprecation._PRINT_DEPRECATION_WARNINGS = False
+
+
 def interact_model(
-    textinput='hai',
-    model_name='124M',
-    seed=None,
-    nsamples=1,
-    batch_size=1,
-    length=20,
-    temperature=1,
-    top_k=0,
-    top_p=1,
-    models_dir='models',
+        textinput='hai',
+        model_name='124M',
+        seed=None,
+        nsamples=1,
+        batch_size=1,
+        length=20,
+        temperature=1,
+        top_k=0,
+        top_p=1,
+        models_dir='models',
 ):
     """
     Interactively run the model
@@ -75,17 +81,19 @@ def interact_model(
         saver = tf.compat.v1.train.Saver()
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, model_name))
         saver.restore(sess, ckpt)
-        context_tokens = enc.encode(textinput)
-        generated = 0
-        for _ in range(nsamples // batch_size):
-            out = sess.run(output, feed_dict={
-                context: [context_tokens for _ in range(batch_size)]
-            })[:, len(context_tokens):]
-            for i in range(batch_size):
-                generated += 1
-                text = enc.decode(out[i])
-                return text
-                #sys.stdout.flush()
+        while True:
+            raw_text = input()
+            context_tokens = enc.encode(textinput)
+            generated = 0
+            for _ in range(nsamples // batch_size):
+                out = sess.run(output, feed_dict={
+                    context: [context_tokens for _ in range(batch_size)]
+                })[:, len(context_tokens):]
+                for i in range(batch_size):
+                    generated += 1
+                    text = enc.decode(out[i])
+                    print(text)
+                # sys.stdout.flush()
 
-#if __name__ == '__main__':
-#    fire.Fire(interact_model)
+
+fire.Fire(interact_model)
